@@ -31,5 +31,12 @@ switch getenv('computername')
         Param.LED1Amp=0.21;
         Param.LED2Amp=5;
         Param.LED1bAmp=2;
+    otherwise
+        Param.rig='Unknown';
+        Param.nidaqDev='Dev1';
+        Param.LED1Amp=0;
+        Param.LED2Amp=0;
+        Param.LED1bAmp=0;
+        disp('Unrecognized computer - register possible in BpodParam_PCdep function')
 end
 end
