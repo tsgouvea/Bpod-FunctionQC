@@ -30,11 +30,13 @@ for ch = nidaq.ao_channels
 end
 
 % For the running wheel - quadrature rotary encoder
+if S.GUI.Wheel
 nidaq.counter = addCounterInputChannel(nidaq.session,nidaq.device,0,'Position');
 nidaq.counter.EncoderType = 'X1';
 % nidaq.counter.ZResetEnable = true;
 % nidaq.counter.ZResetCondition = 'BothLow';
 % nidaq.counter.ZResetValue = 0;
+end
 
 % Sampling rate
 nidaq.session.Rate = nidaq.sample_rate;
