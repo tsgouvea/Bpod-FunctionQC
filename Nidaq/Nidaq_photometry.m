@@ -1,8 +1,6 @@
 function [photometryData,wheelData,photometry2Data]=Nidaq_photometry(action,Param)
 global nidaq S
 
-
-
 switch action
     case 'ini'
 %% NIDAQ Initialization
@@ -48,19 +46,16 @@ lh{1} = nidaq.session.addlistener('DataAvailable',@Nidaq_callback);
 nidaq.ai_data            = [];
 if S.GUI.Photometry
     nidaq.LED1              = Nidaq_modulation(S.GUI.LED1_Amp,S.GUI.LED1_Freq);
-    nidaq.LED2              = Nidaq_modulation(0,0);
-    if S.GUI.Isobestic405 || S.GUI.RedChannel
+    nidaq.LED2              = [];
+if S.GUI.Isobestic405 || S.GUI.RedChannel
     nidaq.LED2              = Nidaq_modulation(S.GUI.LED2_Amp,S.GUI.LED2_Freq);
-    end
-    if S.GUI.DbleFibers
-    nidaq.LED2              = Nidaq_modulation(S.GUI.LED1b_Amp,S.GUI.LED1b_Freq);
-    end
-else
-    nidaq.LED1              = Nidaq_modulation(0,S.GUI.LED1_Freq);
-    nidaq.LED2              = Nidaq_modulation(0,S.GUI.LED2_Freq);
 end
-nidaq.ao_data           = [nidaq.LED1 nidaq.LED2];
-nidaq.session.queueOutputData(nidaq.ao_data);
+if S.GUI.DbleFibers
+    nidaq.LED2              = Nidaq_modulation(S.GUI.LED1b_Amp,S.GUI.LED1b_Freq);
+end
+    nidaq.ao_data           = [nidaq.LED1 nidaq.LED2];
+    nidaq.session.queueOutputData(nidaq.ao_data);
+end
 
 nidaq.session.NotifyWhenDataAvailableExceeds = nidaq.sample_rate/5;
 nidaq.session.prepare();
