@@ -72,7 +72,7 @@ figData.meanplot=meanplot;
 
     case 'update'
 currentTrialType=BpodSystem.Data.TrialTypes(end);
-        %% Update last recording plot
+%% Update last recording plot
 set(figData.lastplotRaw, 'Xdata',nidaqRaw(:,1),'YData',nidaqRaw(:,2));
 set(figData.lastplot470, 'Xdata',newData470(:,1),'YData',newData470(:,2));
          if currentTrialType<=6
