@@ -58,7 +58,7 @@ xlabel('Trial Number');
 ylabel('Cue type')
 
 %Generates and handles plots for each trials and a current trial plot
-curTrialplot=plot([1 1],[0 6],'-b');
+curTrialplot=plot([1 1],[0 0.5+max(S.TrialsMatrix(:,3))],'-b');
 for i=1:length(trialSequence)
     trialsPlot(i)=plot(i,S.TrialsMatrix(trialSequence(i),3),'LineStyle','none','marker',char(S.TrialsMatrix(trialSequence(i),7)),'MarkerFaceColor','b', 'MarkerEdgeColor','k','MarkerSize',MS_trial);
 end
