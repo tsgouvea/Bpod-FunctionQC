@@ -1,45 +1,45 @@
 function [NidaqDemod, NidaqRaw]=Online_NidaqDemod(rawData,refData,modFreq,modAmp,StateToZero)
-global BpodSystem S
+global BpodSystem TaskParameters
 
-decimateFactor=S.GUI.DecimateFactor;
-duration=S.GUI.NidaqDuration;
-sampleRate=S.GUI.NidaqSamplingRate;
-baseline_begin=S.GUI.BaselineBegin;
-baseline_end=S.GUI.BaselineEnd;
+decimateFactor=TaskParameters.GUI.DecimateFactor;
+duration=TaskParameters.GUI.NidaqDuration;
+sampleRate=TaskParameters.GUI.NidaqSamplingRate;
+baseline_begin=0;
+baseline_end=TaskParameters.GUI.BaselineDur;
 lowCutoff=15;
 pad=1;
-if S.GUI.Modulation
-%% Prepare reference data and generates 90deg shifted ref data
-refData             = refData(1:length(rawData),1);   % adjust length of refData to rawData
-refData             = refData-mean(refData);          % suppress DC offset
-samplesPerPeriod    = (1/modFreq)/(1/sampleRate);
-quarterPeriod       = round(samplesPerPeriod/4);
-refData90           = circshift(refData,[1 quarterPeriod]);
-
-%% Quadrature decoding and filtering
-processedData_0     = rawData .* refData;
-processedData_90    = rawData .* refData90;
-
-%% Filter
+if TaskParameters.GUI.Modulation
+    %% Prepare reference data and generates 90deg shifted ref data
+    refData             = refData(1:length(rawData),1);   % adjust length of refData to rawData
+    refData             = refData-mean(refData);          % suppress DC offset
+    samplesPerPeriod    = (1/modFreq)/(1/sampleRate);
+    quarterPeriod       = round(samplesPerPeriod/4);
+    refData90           = circshift(refData,[1 quarterPeriod]);
+    
+    %% Quadrature decoding and filtering
+    processedData_0     = rawData .* refData;
+    processedData_90    = rawData .* refData90;
+    
+    %% Filter
     lowCutoff = lowCutoff/(sampleRate/2); % normalized CutOff by half SampRate (see doc)
-    [b, a] = butter(5, lowCutoff, 'low'); 
+    [b, a] = butter(5, lowCutoff, 'low');
     % pad the data to suppress windows effect upon filtering
     if pad == 1
         paddedData_0        = processedData_0(1:sampleRate, 1);
         paddedData_90       = processedData_90(1:sampleRate, 1);
         demodDataFilt_0     = filtfilt(b,a,[paddedData_0; processedData_0]);
-        demodDataFilt_90    = filtfilt(b,a,[paddedData_90; processedData_90]);        
+        demodDataFilt_90    = filtfilt(b,a,[paddedData_90; processedData_90]);
         processedData_0     = demodDataFilt_0(sampleRate + 1: end, 1);
         processedData_90    = demodDataFilt_90(sampleRate + 1: end, 1);
     else
         processedData_0     = filtfilt(b,a,processedData_0);
-        processedData_90    = filtfilt(b,a,processedData_90); 
+        processedData_90    = filtfilt(b,a,processedData_90);
     end
     
-demodData = (processedData_0 .^2 + processedData_90 .^2) .^(1/2);
-
-%% Correct for amplitude of reference
-demodData=demodData*2/modAmp;
+    demodData = (processedData_0 .^2 + processedData_90 .^2) .^(1/2);
+    
+    %% Correct for amplitude of reference
+    demodData=demodData*2/modAmp;
 else
     demodData=rawData;
 end
@@ -51,12 +51,17 @@ TempData=decimate(demodData,decimateFactor);
 Data(1:length(TempData))=TempData;
 
 %% DF/F calculation
-Fbaseline=mean(Data(baseline_begin*SampRate:baseline_end*SampRate));
+Fbaseline=mean(Data(1+baseline_begin*SampRate:baseline_end*SampRate));
 DFF=100*(Data-Fbaseline)/Fbaseline;
 
 %% Time
 Time=linspace(0,duration,ExpectedSize);
-TimeToZero=BpodSystem.Data.RawEvents.Trial{1,end}.States.(StateToZero)(1,1);
+TimeToZero=0;
+for iState = 1:numel(StateToZero)
+    if any(strcmp(StateToZero{iState},BpodSystem.Data.RawData.OriginalStateNamesByNumber{end}(BpodSystem.Data.RawData.OriginalStateData{end})))
+        TimeToZero=BpodSystem.Data.RawEvents.Trial{1,end}.States.(StateToZero{iState})(1,1);
+    end
+end
 Time=Time'-TimeToZero;
 
 %% Raw Data

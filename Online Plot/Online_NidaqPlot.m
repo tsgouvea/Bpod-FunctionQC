@@ -1,9 +1,9 @@
 function figData=Online_NidaqPlot(action,phototitle,figData,newData470,nidaqRaw)
-global BpodSystem S
+global BpodSystem TaskParameters
 %% general ploting parameters
 labelx='Time (sec)'; labely='DF/F'; 
-minx=S.GUI.TimeMin; maxx=S.GUI.TimeMax;  xstep=1;    xtickvalues=minx:xstep:maxx;
-miny=S.GUI.NidaqMin; maxy=S.GUI.NidaqMax;
+minx=TaskParameters.GUI.TimeMin; maxx=TaskParameters.GUI.TimeMax;  xstep=1;    xtickvalues=minx:xstep:maxx;
+miny=TaskParameters.GUI.NidaqMin; maxy=TaskParameters.GUI.NidaqMax;
 MeanThickness=2;
 
 switch action
@@ -21,7 +21,7 @@ figPlot=figure('Name',figtitle,'Position',FigSze, 'numbertitle','off');
 hold on
 ProtoSummary=sprintf('%s : %s -- %s - %s',...
     date, BpodSystem.GUIData.SubjectName, ...
-    BpodSystem.GUIData.ProtocolName, S.Names.Phase{S.GUI.Phase});
+    BpodSystem.GUIData.ProtocolName, TaskParameters.Names.Phase{TaskParameters.GUI.Phase});
 ProtoLegend=uicontrol('style','text');
 set(ProtoLegend,'String',ProtoSummary); 
 set(ProtoLegend,'Position',[10,1,400,20]);
@@ -38,9 +38,9 @@ lastplot470=plot([-5 5],[0 0],'-g','LineWidth',MeanThickness);
 hold off
 
 %% Plot previous recordings
-subplotTitles=S.TrialsNames;
-for i=1:S.TrialsMatrix(end,1)
-    subplotTitles{i}=sprintf('%s - cue # %.0d',subplotTitles{i},S.TrialsMatrix(i,3));
+subplotTitles=TaskParameters.TrialsNames;
+for i=1:TaskParameters.TrialsMatrix(end,1)
+    subplotTitles{i}=sprintf('%s - cue # %.0d',subplotTitles{i},TaskParameters.TrialsMatrix(i,3));
 end
 %Subplot
 for i=1:6

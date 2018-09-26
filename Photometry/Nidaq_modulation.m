@@ -1,8 +1,8 @@
 function Modulated_LED=Nidaq_modulation(amp,freq)
 %Generates a sin wave for LED amplitude modulation.
-global nidaq S
+global nidaq TaskParameters
 
-if S.GUI.Modulation==0 || freq==0 || amp==0
+if TaskParameters.GUI.Modulation==0 || freq==0 || amp==0
     Modulated_LED=(amp/2)*ones(nidaq.duration*nidaq.sample_rate,1);
 else
 DeltaT=1/nidaq.sample_rate;

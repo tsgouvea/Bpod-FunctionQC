@@ -31,6 +31,12 @@ switch getenv('computername')
         Param.LED1Amp=0.21;
         Param.LED2Amp=5;
         Param.LED1bAmp=2;
+    case 'BOB-RIG'
+        Param.rig='Sarah';
+        Param.nidaqDev='Dev1';
+        Param.LED1Amp=0;
+        Param.LED2Amp=0;
+        Param.LED1bAmp=0;
     otherwise
         Param.rig='Unknown';
         Param.nidaqDev='Dev1';

@@ -1,14 +1,13 @@
-function demodData=Nidaq_demodulation(rawData,sampleRate,modFreq,lowCutoff)
+function demodData=Nidaq_demodulation(rawData,sampleRate,modAmp,modFreq,duration,lowCutoff)
 % Demodulate an AM-modulated input ('rawData') in quadrature given a
 % reference ('refData'). 'LowCutOff' is a corner frequency for 5-pole
 % butterworth lowpass filter.
-
-if nargin<5
+if nargin<7
     lowCutoff=[];
 end
 
 %% Prepare reference data and generates 90deg shifted ref data
-refData             = Nidaq_modulation(S.LED1_amp,modFreq);
+refData             = Nidaq_modulation_offline(modAmp,modFreq,duration,sampleRate);
 refData             = refData(1:length(rawData),1);   % adjust length of refData to rawData
 refData             = refData-mean(refData);          % suppress DC offset
 samplesPerPeriod    = (1/modFreq)/(1/sampleRate);
