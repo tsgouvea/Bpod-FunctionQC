@@ -38,7 +38,7 @@ demodData=demodData*2/modAmp;
 
 %% Decimate
 demodData = decimate(demodData,decimateFactor);
-demodTime = ceil(linspace(0,length(rawData)/sampleRate,length(rawData)/decimateFactor));
+demodTime = linspace(0,length(rawData)/sampleRate,length(rawData)/decimateFactor);
 
 end
 
